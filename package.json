@@ -1,0 +1,14 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types src/main.ts"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.5.3",
+    "fast-xml-parser": "^4.1.1",
+    "inquirer-file-selector": "^0.6.2"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
