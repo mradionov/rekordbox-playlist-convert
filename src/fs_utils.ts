@@ -3,26 +3,26 @@ import path from 'path';
 import fsp from 'fs/promises';
 import fs from 'fs';
 
-export function __dirname() {
+export function __dirname(): string {
   const __filename = url.fileURLToPath(import.meta.url);
   return path.dirname(__filename);
 }
 
-export function isHidden(filePath) {
+export function isHidden(filePath: string): boolean {
   return path.basename(filePath).startsWith('.');
 }
 
-export async function readJSON(filePath) {
+export async function readJSON<T>(filePath: string) {
   const json = await fsp.readFile(filePath, 'utf8');
-  return JSON.parse(json);
+  return JSON.parse(json) as T;
 }
 
-export async function writeJSON(filePath, obj) {
+export async function writeJSON<T>(filePath: string, obj: T): Promise<void> {
   const json = JSON.stringify(obj, null, 2);
   return await fsp.writeFile(filePath, json, 'utf8');
 }
 
-export async function exists(filePath) {
+export async function exists(filePath: string): Promise<boolean> {
   try {
     await fsp.access(filePath, fs.constants.F_OK);
     return true;
@@ -31,7 +31,7 @@ export async function exists(filePath) {
   }
 }
 
-export async function mkdir(dirPath) {
+export async function mkdir(dirPath: string): Promise<void> {
   try {
     await fsp.mkdir(dirPath, {recursive: true});
   } catch (err) {
@@ -41,12 +41,12 @@ export async function mkdir(dirPath) {
   }
 }
 
-export async function dirdirs(dirPath) {
+export async function dirdirs(dirPath: string): Promise<string[]> {
   const dirents = await fsp.readdir(dirPath, {withFileTypes: true});
   return dirents.filter(d => d.isDirectory()).map(d => d.name);
 }
 
-export async function dirfiles(dirPath) {
+export async function dirfiles(dirPath: string): Promise<string[]> {
   const dirents = await fsp.readdir(dirPath, {withFileTypes: true});
   return dirents.filter(d => d.isFile()).map(d => d.name);
 }

@@ -4,12 +4,15 @@ import {XMLParser} from "fast-xml-parser";
 const xmlParser = new XMLParser({ignoreAttributes: false});
 
 export class RekordboxXml {
-  constructor(collection, playlists) {
+  readonly collection: Collection;
+  readonly playlists: Playlists;
+
+  constructor(collection: Collection, playlists: Playlists) {
     this.collection = collection;
     this.playlists = playlists;
   }
 
-  static parse(xmlString) {
+  static parse(xmlString: string): RekordboxXml {
     const xml = xmlParser.parse(xmlString);
 
     const collectionXml = xml['DJ_PLAYLISTS']['COLLECTION'];
@@ -21,28 +24,30 @@ export class RekordboxXml {
     return new RekordboxXml(collection, playlists);
   }
 
-  toXmlString() {
-    const parts = [
-      '<?xml version="1.0" encoding="UTF-8"?>',
-      '<DJ_PLAYLISTS Version="1.0.0">',
-      this.collection.toXmlString(),
-      this.playlists.toXmlString(),
-      '</DJ_PLAYLISTS>',
-    ];
-    return parts.join('\n');
-  }
+  // toXmlString() {
+  //   const parts = [
+  //     '<?xml version="1.0" encoding="UTF-8"?>',
+  //     '<DJ_PLAYLISTS Version="1.0.0">',
+  //     this.collection.toXmlString(),
+  //     this.playlists.toXmlString(),
+  //     '</DJ_PLAYLISTS>',
+  //   ];
+  //   return parts.join('\n');
+  // }
 }
 
-class Collection {
-  trackMap = new Map();
+type TrackKey = string;
 
-  constructor(tracks) {
+class Collection {
+  readonly trackMap = new Map<TrackKey, Track>();
+
+  constructor(tracks: Track[]) {
     for (const track of tracks) {
       this.trackMap.set(track.key, track);
     }
   }
 
-  static fromXmlObject(collectionXml) {
+  static fromXmlObject(collectionXml): Collection {
     const tracksXml = collectionXml['TRACK'];
     const tracks = [];
     for (const trackXml of tracksXml) {
@@ -52,34 +57,36 @@ class Collection {
     return new Collection(tracks);
   }
 
-  find(trackKey) {
+  find(trackKey: TrackKey): Track | undefined {
     return this.trackMap.get(trackKey);
   }
 }
 
 class Track {
-  constructor(trackXml) {
+  private readonly trackXml: object;
+
+  constructor(trackXml: object) {
     this.trackXml = trackXml;
   }
 
-  get key() {
+  get key(): string {
     return this.trackXml['@_TrackID'];
   }
 
-  get path() {
+  get path(): string {
     return decodeURI(this.trackXml['@_Location'].replace(/^file:\/\/localhost/, '')).replaceAll('%26', '&');
   }
 
-  get fileName() {
+  get fileName(): string {
     return path.basename(this.path);
   }
 
-  get ext() {
+  get ext(): string {
     const trackFileNameParts = this.fileName.split('.');
     return trackFileNameParts.pop();
   }
 
-  get fileNameNoExt() {
+  get fileNameNoExt(): string {
     const trackFileNameParts = this.fileName.split('.');
     trackFileNameParts.pop();
     return trackFileNameParts.join('.');
@@ -91,20 +98,23 @@ class Track {
 }
 
 class Playlists {
-  constructor(xml, nodes) {
+  private readonly xml: object;
+  private readonly nodes: PlaylistNode[];
+
+  constructor(xml: object, nodes: PlaylistNode[]) {
     this.xml = xml;
     this.nodes = nodes;
   }
 
-  get rootNode() {
+  get rootNode(): PlaylistNode {
     return this.nodes[0];
   }
 
-  findRootFolders() {
+  findRootFolders(): PlaylistNode[] {
     return this.rootNode.findFolders();
   }
 
-  static fromXmlObject(xml, collection) {
+  static fromXmlObject(xml: object, collection: Collection) {
     const rootXml = xml['NODE'];
     const root = PlaylistNode.fromXmlObject(rootXml, collection);
 
@@ -113,20 +123,30 @@ class Playlists {
     return new Playlists(xml, [root]);
   }
 
-  toXmlString() {
+  toXmlString(): object {
     return this.xml;
   }
 }
 
 class PlaylistNode {
-  constructor(name, type, children = [], tracks = []) {
+  readonly name: string;
+  private readonly type: string;
+  private readonly children: PlaylistNode[];
+  private readonly tracks: Track[];
+
+  constructor(
+    name: string,
+    type: string,
+    children: PlaylistNode[] = [],
+    tracks: Track[] = [],
+  ) {
     this.name = name;
     this.type = type;
     this.children = children;
     this.tracks = tracks;
   }
 
-  static fromXmlObject(xml, collection) {
+  static fromXmlObject(xml: object, collection: Collection): PlaylistNode {
     const name = xml['@_Name'];
     const type = xml['@_Type'];
     const children = [];
@@ -167,27 +187,27 @@ class PlaylistNode {
     return new PlaylistNode(name, type, children, tracks)
   }
 
-  findFolders() {
+  findFolders(): PlaylistNode[] {
     return this.children.filter(node => node.isFolder);
   }
 
-  findPlaylists() {
+  findPlaylists(): PlaylistNode[] {
     return this.children.filter(node => node.isPlaylist);
   }
 
-  findTracks() {
+  findTracks(): Track[] {
     return this.tracks;
   }
 
-  get isFolder() {
+  get isFolder(): boolean {
     return this.type === '0';
   }
 
-  get isPlaylist() {
+  get isPlaylist(): boolean {
     return this.type === '1';
   }
 
-  print(level = 0) {
+  print(level = 0): void {
     console.log(`${'-'.repeat(level * 2)}${this.name} (${this.type})`);
     for (const child of this.children) {
       child.print(level + 1);

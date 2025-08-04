@@ -1,14 +1,15 @@
 import path from "path";
 import fsp from "fs/promises";
 import fs from "fs";
-import util from 'util';
 import childProcess from 'child_process';
-import * as fsUtils from './fs_utils.js';
+import util from 'util';
+import * as fsUtils from './fs_utils.ts';
+import {RekordboxXml} from "./rekordbox_xml.ts";
 
 const exec = util.promisify(childProcess.exec);
 
-export async function convert(collection, convertedDir) {
-  const {folders} = collection;
+export async function convert(rbXml: RekordboxXml, convertedDir: string) {
+  const folders = rbXml.playlists.findRootFolders();
 
   for (const folder of folders) {
     const folderPath = path.resolve(convertedDir, folder.name);
@@ -16,7 +17,8 @@ export async function convert(collection, convertedDir) {
 
     const existingPlaylists = new Set(await fsUtils.dirdirs(folderPath));
 
-    for (const playlist of folder.playlists) {
+    const playlists = folder.findPlaylists();
+    for (const playlist of playlists) {
       const playlistName = `${folder.name} - ${playlist.name}`;
       const playlistPath = path.resolve(folderPath, playlistName);
       await fsUtils.mkdir(playlistPath);
@@ -25,7 +27,8 @@ export async function convert(collection, convertedDir) {
 
       const existingFiles = new Set(await fsUtils.dirfiles(playlistPath));
 
-      for (const track of playlist.tracks) {
+      const tracks = playlist.findTracks();
+      for (const track of tracks) {
         const trackDestName = track.fileNameNoExt + '.mp3';
         const trackDestPath = path.resolve(playlistPath, trackDestName);
 
