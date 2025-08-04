@@ -4,11 +4,11 @@ import fs from "fs";
 import childProcess from 'child_process';
 import util from 'util';
 import * as fsUtils from './fs_utils.ts';
-import {RekordboxXml} from "./rekordbox_xml.ts";
+import {Library} from "./library.ts";
 
 const exec = util.promisify(childProcess.exec);
 
-export async function convert(rbXml: RekordboxXml, convertedDir: string) {
+export async function convert(rbXml: Library, convertedDir: string) {
   const folders = rbXml.playlists.findRootFolders();
 
   for (const folder of folders) {

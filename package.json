@@ -1,5 +1,8 @@
 {
   "type": "module",
+  "engines": {
+    "node": ">=22.6.0"
+  },
   "scripts": {
     "start": "node --experimental-strip-types src/main.ts"
   },

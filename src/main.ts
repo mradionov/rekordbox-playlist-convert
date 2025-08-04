@@ -8,14 +8,14 @@ async function main() {
 
   console.log('Settings', settings);
 
-  const rbXml = await parse(settings.manifestPath);
+  const library = await parse(settings.manifestPath);
 
   const shouldStart = await promptStartConvert();
   if (!shouldStart) {
     return;
   }
 
-  await convert(rbXml, settings.convertedDir);
+  await convert(library, settings.convertedDir);
 }
 
 async function promptStartConvert() {
