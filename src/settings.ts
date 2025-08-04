@@ -1,7 +1,7 @@
 import os from 'os';
 import path from 'path';
-import {confirm} from "@inquirer/prompts";
-import fileSelector from 'inquirer-file-selector'
+import { confirm } from '@inquirer/prompts';
+import fileSelector from 'inquirer-file-selector';
 import * as fsUtils from './fs_utils.ts';
 
 const CACHE_DIR = path.join(fsUtils.__dirname(), '..', 'cache');
@@ -49,10 +49,9 @@ async function loadSavedSettings(): Promise<Settings> {
 
 async function promptUseSaved() {
   return await confirm({
-    message: 'Use saved input?'
+    message: 'Use saved input?',
   });
 }
-
 
 const fileFilter = (file) => !fsUtils.isHidden(file.path);
 
@@ -75,7 +74,7 @@ async function promptSettings(savedSettings: Settings = {}): Promise<Settings> {
       ? path.dirname(savedSettings.convertedDir)
       : os.homedir(),
     filter: fileFilter,
-  })
+  });
 
   const shouldSave = await confirm({
     message: 'Save settings?',

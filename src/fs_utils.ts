@@ -33,7 +33,7 @@ export async function exists(filePath: string): Promise<boolean> {
 
 export async function mkdir(dirPath: string): Promise<void> {
   try {
-    await fsp.mkdir(dirPath, {recursive: true});
+    await fsp.mkdir(dirPath, { recursive: true });
   } catch (err) {
     if (err.code !== 'EEXIST') {
       throw err;
@@ -42,11 +42,11 @@ export async function mkdir(dirPath: string): Promise<void> {
 }
 
 export async function dirdirs(dirPath: string): Promise<string[]> {
-  const dirents = await fsp.readdir(dirPath, {withFileTypes: true});
-  return dirents.filter(d => d.isDirectory()).map(d => d.name);
+  const dirents = await fsp.readdir(dirPath, { withFileTypes: true });
+  return dirents.filter((d) => d.isDirectory()).map((d) => d.name);
 }
 
 export async function dirfiles(dirPath: string): Promise<string[]> {
-  const dirents = await fsp.readdir(dirPath, {withFileTypes: true});
-  return dirents.filter(d => d.isFile()).map(d => d.name);
+  const dirents = await fsp.readdir(dirPath, { withFileTypes: true });
+  return dirents.filter((d) => d.isFile()).map((d) => d.name);
 }

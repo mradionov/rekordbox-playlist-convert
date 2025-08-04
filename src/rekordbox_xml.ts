@@ -2,7 +2,7 @@ export type RekordboxXml = {
   DJ_PLAYLISTS: {
     COLLECTION: CollectionXml;
     PLAYLISTS: PlaylistsXml;
-  }
+  };
 };
 
 export type CollectionXml = {

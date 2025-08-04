@@ -1,5 +1,11 @@
-import path from "path";
-import type {CollectionXml, RekordboxXml, TrackXml, PlaylistNodeXml, PlaylistsXml} from "./rekordbox_xml.ts";
+import path from 'path';
+import type {
+  CollectionXml,
+  RekordboxXml,
+  TrackXml,
+  PlaylistNodeXml,
+  PlaylistsXml,
+} from './rekordbox_xml.ts';
 
 export class Library {
   readonly collection: Collection;
@@ -74,7 +80,9 @@ class Track {
   }
 
   get path(): string {
-    return decodeURI(this.trackXml['@_Location'].replace(/^file:\/\/localhost/, '')).replaceAll('%26', '&');
+    return decodeURI(
+      this.trackXml['@_Location'].replace(/^file:\/\/localhost/, ''),
+    ).replaceAll('%26', '&');
   }
 
   get fileName(): string {
@@ -167,24 +175,24 @@ class PlaylistNode {
         const trackKey = trackRefXml['@_Key'];
         const track = collection.find(trackKey);
         if (!track) {
-          throw new Error(`Missing track: "${trackKey}"`)
+          throw new Error(`Missing track: "${trackKey}"`);
         }
         tracks.push(track);
       }
     } else {
       // Unknown
-      throw new Error(`Unknown playlist node type: "${type}"`)
+      throw new Error(`Unknown playlist node type: "${type}"`);
     }
 
-    return new PlaylistNode(name, type, children, tracks)
+    return new PlaylistNode(name, type, children, tracks);
   }
 
   findFolders(): PlaylistNode[] {
-    return this.children.filter(node => node.isFolder);
+    return this.children.filter((node) => node.isFolder);
   }
 
   findPlaylists(): PlaylistNode[] {
-    return this.children.filter(node => node.isPlaylist);
+    return this.children.filter((node) => node.isPlaylist);
   }
 
   findTracks(): Track[] {

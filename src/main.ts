@@ -1,7 +1,7 @@
-import {confirm} from "@inquirer/prompts";
-import {getSettings} from './settings.ts'
-import {parse} from './parse.ts';
-import {convert} from './convert.ts';
+import { confirm } from '@inquirer/prompts';
+import { getSettings } from './settings.ts';
+import { parse } from './parse.ts';
+import { convert } from './convert.ts';
 
 async function main() {
   const settings = await getSettings();
@@ -20,7 +20,7 @@ async function main() {
 
 async function promptStartConvert() {
   return await confirm({
-    message: 'Start conversion?'
+    message: 'Start conversion?',
   });
 }
 
